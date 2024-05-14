@@ -178,24 +178,31 @@ def _dependency_graph(nodes):
 
 def dfs(circ):
     """Generates nodes via depth first traversal in pre-order."""
+    print("Running DFS")
+
     emitted = set()
-    stack = list(circ.cones | circ.latch_cones)
+    stack = list(circ.cones_set | circ.latch_cones_set)
 
     while stack:
-        node = stack.pop()
+        key = stack.pop()
+        node = circ.get_node(key)
 
-        if node in emitted:
+        if key in emitted:
             continue
-
-        children = set(node.children)
+        if hasattr(node, 'children'):
+            children = set(map(lambda x: x.id, filter(lambda x: x.id not in emitted, node.children)))
+        else:
+            children = set()
 
         if children <= emitted:
             yield node
-            emitted.add(node)
+            emitted.add(node.id)
             continue
 
-        stack.append(node)  # Add to emit after children.
-        stack.extend(children - emitted)
+        stack.append(key)  # Add to emit after children.
+        stack.extend(children)
+
+    print("DFS completed for total nodes ", len(emitted))
 
 
 def topsort(data):
