@@ -299,10 +299,8 @@ def parse_comment(state, stream) -> bool:
     line = _consume_stream(stream, '\n')
     if state.comments is not None:
         state.comments.append(line.rstrip())
-    elif line.rstrip() == 'c':
-        state.comments = []
     else:
-        return False
+        state.comments = []
     return True
 
 
